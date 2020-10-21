@@ -1,9 +1,9 @@
 from geopy.geocoders import Photon
 from openpyxl import load_workbook
-import sys
 
-def main()
-    geolocator = Photon(format_string=None)
+
+def main():
+    geolocator = Photon()
 
     wb = load_workbook(filename='File.xlsx')
     sheet = wb['Foglio1']
@@ -11,7 +11,7 @@ def main()
     column_count = sheet.max_column
     x = 0
     for i in range(2, row_count):
-        #if sheet.cell(row=i, column=25).value == '0':
+        # if sheet.cell(row=i, column=25).value == '0':
         x = x + 1
         if x == 10:
             wb.save("File.xlsx")
@@ -36,6 +36,7 @@ def main()
             sheet.cell(row=i, column=24).value = ''
             sheet.cell(row=i, column=25).value = '-1'
     wb.save("File.xlsx")
-    
+
+
 if __name__ == "__main__":
     main()
