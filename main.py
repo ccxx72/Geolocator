@@ -1,3 +1,4 @@
+from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Photon
 from openpyxl import load_workbook
 
@@ -12,13 +13,14 @@ PRECISION_COLUMN = 25
 
 def main():
     geolocator = Photon()
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 
     wb = load_workbook(filename='File.xlsx')
     sheets = wb.sheetnames
     sheet = wb[sheets[0]]  # selecting always the first sheet
     row_count = sheet.max_row
     column_count = sheet.max_column
-    for i in range(2, row_count):
+    for i in range(2, row_count + 1):
         if i % 10 == 0:
             wb.save("File.xlsx")
 
@@ -30,13 +32,13 @@ def main():
             full_address = f'{address} {loc} {cap} ITALIA'
             print(i, full_address)
             try:
-                location = geolocator.geocode(full_address, timeout=10)
+                location = geocode(full_address, timeout=10)
                 sheet.cell(row=i, column=LAT_COLUMN).value = location.latitude
                 sheet.cell(row=i, column=LON_COLUMN).value = location.longitude
                 sheet.cell(row=i, column=PRECISION_COLUMN).value = ''
             except:
                 try:
-                    location = geolocator.geocode(f'{cap} {loc} ITALIA', timeout=10)
+                    location = geocode(f'{cap} {loc} ITALIA', timeout=10)
                     sheet.cell(row=i, column=LAT_COLUMN).value = location.latitude
                     sheet.cell(row=i, column=LON_COLUMN).value = location.longitude
                     sheet.cell(row=i, column=PRECISION_COLUMN).value = '0'
